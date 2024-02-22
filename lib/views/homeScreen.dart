@@ -52,23 +52,29 @@ class _MyWidgetState extends State<MyWidget> {
       body: Stack(
         children: [
           Transform.scale(
-            scale: 1.6,
+            scale: 1.2,
             alignment: Alignment.bottomCenter,
             child: PageView.builder(
                 controller: _pageDrinkController,
                 scrollDirection: Axis.vertical,
                 itemCount: drinks.length + 1,
+                onPageChanged: (value) {
+                  if (value < drinks.length) {
+                    _pageTextController.animateToPage(value,
+                        duration: _duration, curve: Curves.easeOut);
+                  }
+                },
                 itemBuilder: ((context, index) {
                   if (index == 0) {
                     return const SizedBox.shrink();
                   }
                   final drink = drinks[index - 1];
                   final result = _currentPage - index + 1;
-                  final value = -0.8 * result + 1;
-                  final opacity = value.clamp(0.0, 1.0);
+                  final value = -0.4 * result + 1;
+                  final opacity = value.clamp(1.0, 1.0);
 
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.only(bottom: 20, top: 20),
                     child: Transform(
                         transform: Matrix4.identity()
                           ..setEntry(3, 2, 0.001)
@@ -103,7 +109,18 @@ class _MyWidgetState extends State<MyWidget> {
                                 (1 - (index - _textPage).abs()).clamp(0.0, 1.0);
                             return Opacity(
                                 opacity: opacity,
-                                child: Text(drinks[index].name));
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Text(
+                                    drinks[index].name,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ));
                           })),
                   AnimatedSwitcher(
                       key: Key(drinks[_currentPage.toInt()].image),
